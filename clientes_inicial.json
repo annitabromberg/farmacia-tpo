@@ -1,0 +1,44 @@
+{
+    "1": {
+        "nombre": "Ana",
+        "apellido": "Perez",
+        "obra_social": "OSDE",
+        "receta_online": true,
+        "telefono": "1123456789"
+    },
+    "2": {
+        "nombre": "Juan",
+        "apellido": "Gomez",
+        "obra_social": "Ninguna",
+        "receta_online": false,
+        "telefono": "1145678901"
+    },
+    "3": {
+        "nombre": "Lucia",
+        "apellido": "Fernandez",
+        "obra_social": "Swiss Medical",
+        "receta_online": true,
+        "telefono": "1167890123"
+    },
+    "4": {
+        "nombre": "Pedro",
+        "apellido": "Lopez",
+        "obra_social": "Ninguna",
+        "receta_online": false,
+        "telefono": "1189012345"
+    },
+    "5": {
+        "nombre": "Sofia",
+        "apellido": "Martinez",
+        "obra_social": "PAMI",
+        "receta_online": true,
+        "telefono": "1109876543"
+    },
+    "6": {
+        "nombre": "Martin",
+        "apellido": "Diaz",
+        "obra_social": "Galeno",
+        "receta_online": false,
+        "telefono": "1134567890"
+    }
+}
