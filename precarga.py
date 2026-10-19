@@ -11,31 +11,34 @@ import os
 import archivos
 
 
-def copiar_archivo_inicial(ruta_inicial, ruta_trabajo):
+def copiar_archivo_inicial(ruta_inicial, ruta_trabajo, tipo):
     """
     Si el archivo de trabajo no existe, lo crea a partir del archivo inicial.
 
     Parametros:
         ruta_inicial (str): archivo con los datos de precarga.
         ruta_trabajo (str): archivo que usa el programa (CRUD).
+        tipo (str): "productos" o "clientes".
     """
     if os.path.exists(ruta_trabajo):
         return
 
-    datos = archivos.leer_json(ruta_inicial)
+    datos = archivos.leer_json(ruta_inicial, tipo)
+    if datos is None:
+        return
     if len(datos) == 0:
         print("Aviso: no hay datos de precarga en", os.path.basename(ruta_inicial))
 
-    archivos.guardar_json(ruta_trabajo, datos)
-    print("Precarga realizada:", len(datos), "registros en", os.path.basename(ruta_trabajo))
+    if archivos.guardar_json(ruta_trabajo, datos, tipo):
+        print("Precarga realizada:", len(datos), "registros en", os.path.basename(ruta_trabajo))
 
 
 def cargar_datos():
     """
     Prepara los archivos de trabajo de productos y clientes al iniciar.
     """
-    copiar_archivo_inicial(archivos.RUTA_PRODUCTOS_INICIAL, archivos.RUTA_PRODUCTOS)
-    copiar_archivo_inicial(archivos.RUTA_CLIENTES_INICIAL, archivos.RUTA_CLIENTES)
+    copiar_archivo_inicial(archivos.RUTA_PRODUCTOS_INICIAL, archivos.RUTA_PRODUCTOS, "productos")
+    copiar_archivo_inicial(archivos.RUTA_CLIENTES_INICIAL, archivos.RUTA_CLIENTES, "clientes")
 
 
 def restaurar_datos():
@@ -43,8 +46,14 @@ def restaurar_datos():
     Vuelve los datos al estado inicial: borra los cambios hechos en
     productos.json y clientes.json y los copia otra vez desde los iniciales.
     """
-    productos = archivos.leer_json(archivos.RUTA_PRODUCTOS_INICIAL)
-    clientes = archivos.leer_json(archivos.RUTA_CLIENTES_INICIAL)
-    archivos.guardar_json(archivos.RUTA_PRODUCTOS, productos)
-    archivos.guardar_json(archivos.RUTA_CLIENTES, clientes)
+    productos = archivos.leer_json(archivos.RUTA_PRODUCTOS_INICIAL, "productos")
+    clientes = archivos.leer_json(archivos.RUTA_CLIENTES_INICIAL, "clientes")
+    if productos is None or clientes is None:
+        print("No se restauraron los datos porque la precarga no es valida.")
+        return
+    productos_guardados = archivos.guardar_json(archivos.RUTA_PRODUCTOS, productos, "productos")
+    clientes_guardados = archivos.guardar_json(archivos.RUTA_CLIENTES, clientes, "clientes")
+    if not productos_guardados or not clientes_guardados:
+        print("Error: no se pudieron restaurar todos los datos.")
+        return
     print("Datos restaurados a la precarga inicial.")

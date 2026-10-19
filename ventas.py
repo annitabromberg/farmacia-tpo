@@ -45,8 +45,10 @@ def realizar_venta():
     Pide cliente, producto, cantidad y forma de pago, valida las reglas
     de negocio y registra la venta.
     """
-    productos = archivos.leer_json(archivos.RUTA_PRODUCTOS)
-    clientes = archivos.leer_json(archivos.RUTA_CLIENTES)
+    productos = archivos.leer_json(archivos.RUTA_PRODUCTOS, "productos")
+    clientes = archivos.leer_json(archivos.RUTA_CLIENTES, "clientes")
+    if productos is None or clientes is None:
+        return
 
     print("\nNUEVA VENTA")
     print("-" * 30)
@@ -96,8 +98,9 @@ def realizar_venta():
         print("Venta cancelada.")
         return
 
+    stock_anterior = producto["stock"]
     producto["stock"] = producto["stock"] - cantidad
-    if not archivos.guardar_json(archivos.RUTA_PRODUCTOS, productos):
+    if not archivos.guardar_json(archivos.RUTA_PRODUCTOS, productos, "productos"):
         print("No se pudo actualizar el stock. La venta no se registro.")
         return
 
@@ -111,7 +114,12 @@ def realizar_venta():
         str(total),
         forma_pago
     ])
-    archivos.registrar_venta_txt(linea)
+    if not archivos.registrar_venta_txt(linea):
+        producto["stock"] = stock_anterior
+        if not archivos.guardar_json(archivos.RUTA_PRODUCTOS, productos, "productos"):
+            print("Error: no se pudo restaurar el stock despues del fallo.")
+        print("No se pudo guardar la venta en el historial.")
+        return
 
     print("\nVenta realizada correctamente.")
     print("Stock restante de", producto["nombre"] + ":", producto["stock"])

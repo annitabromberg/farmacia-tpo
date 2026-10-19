@@ -32,7 +32,9 @@ def informe_stock():
     Informe de stock: una fila por producto con su valor en stock
     (precio x unidades) y el total general al final.
     """
-    productos = archivos.leer_json(archivos.RUTA_PRODUCTOS)
+    productos = archivos.leer_json(archivos.RUTA_PRODUCTOS, "productos")
+    if productos is None:
+        return
     if len(productos) == 0:
         print("No hay productos cargados.")
         return
@@ -64,7 +66,9 @@ def informe_categorias():
     unidades en stock, valor del stock y productos con receta.
     Si matplotlib esta instalado, ademas muestra un grafico de barras.
     """
-    productos = archivos.leer_json(archivos.RUTA_PRODUCTOS)
+    productos = archivos.leer_json(archivos.RUTA_PRODUCTOS, "productos")
+    if productos is None:
+        return
     if len(productos) == 0:
         print("No hay productos cargados.")
         return
@@ -125,7 +129,9 @@ def informe_bajo_stock():
     Lista los productos con stock menor o igual a un limite que elige
     el usuario, ordenados de menor a mayor stock.
     """
-    productos = archivos.leer_json(archivos.RUTA_PRODUCTOS)
+    productos = archivos.leer_json(archivos.RUTA_PRODUCTOS, "productos")
+    if productos is None:
+        return
     limite = validaciones.validar_entero("Mostrar productos con stock menor o igual a: ", 0)
 
     # lista por comprension + lambda para ordenar
@@ -147,6 +153,8 @@ def informe_ventas():
     filas = formas de pago, columnas = categorias, celdas = total vendido ($).
     """
     ventas = archivos.leer_ventas_txt()
+    if ventas is None:
+        return
     if len(ventas) == 0:
         print("Todavia no hay ventas registradas.")
         return
@@ -158,15 +166,12 @@ def informe_ventas():
     totales = [[0 for c in categorias] for f in formas_pago]
 
     for venta in ventas:
-        try:
-            categoria = venta[3]
-            total = int(venta[5])
-            forma_pago = venta[6]
-            fila = formas_pago.index(forma_pago)
-            columna = categorias.index(categoria)
-            totales[fila][columna] = totales[fila][columna] + total
-        except (IndexError, ValueError):
-            print("Aviso: se ignoro una linea con formato incorrecto en ventas.txt")
+        categoria = venta[3]
+        total = int(venta[5])
+        forma_pago = venta[6]
+        fila = formas_pago.index(forma_pago)
+        columna = categorias.index(categoria)
+        totales[fila][columna] = totales[fila][columna] + total
 
     matriz = [["Forma de pago"] + list(categorias) + ["TOTAL"]]
     for i in range(len(formas_pago)):

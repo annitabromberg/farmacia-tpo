@@ -103,7 +103,9 @@ def ver_productos(orden="codigo"):
         orden (str): "codigo" o "precio". Para ordenar por precio se usa
                      una funcion lambda como criterio de ordenamiento.
     """
-    productos = archivos.leer_json(archivos.RUTA_PRODUCTOS)
+    productos = archivos.leer_json(archivos.RUTA_PRODUCTOS, "productos")
+    if productos is None:
+        return
     if len(productos) == 0:
         print("No hay productos cargados.")
         return
@@ -124,7 +126,9 @@ def ver_producto():
     """
     READ individual: muestra todos los datos de un producto.
     """
-    productos = archivos.leer_json(archivos.RUTA_PRODUCTOS)
+    productos = archivos.leer_json(archivos.RUTA_PRODUCTOS, "productos")
+    if productos is None:
+        return
     codigo = validaciones.validar_entero("Ingrese el codigo del producto: ", 1)
     producto = buscar(productos, codigo)
 
@@ -146,7 +150,9 @@ def agregar_producto():
     """
     CREATE: da de alta un producto nuevo y sobrescribe productos.json.
     """
-    productos = archivos.leer_json(archivos.RUTA_PRODUCTOS)
+    productos = archivos.leer_json(archivos.RUTA_PRODUCTOS, "productos")
+    if productos is None:
+        return
 
     nombre = validaciones.validar_texto("Nombre del producto: ")
 
@@ -175,7 +181,7 @@ def agregar_producto():
         "laboratorio": laboratorio
     }
 
-    if archivos.guardar_json(archivos.RUTA_PRODUCTOS, productos):
+    if archivos.guardar_json(archivos.RUTA_PRODUCTOS, productos, "productos"):
         print("Producto agregado correctamente con el codigo", codigo)
 
 
@@ -184,7 +190,9 @@ def modificar_producto():
     UPDATE: modifica los atributos de un producto en el diccionario interno
     y sobrescribe productos.json. Si se deja un campo vacio, no se cambia.
     """
-    productos = archivos.leer_json(archivos.RUTA_PRODUCTOS)
+    productos = archivos.leer_json(archivos.RUTA_PRODUCTOS, "productos")
+    if productos is None:
+        return
     codigo = validaciones.validar_entero("Codigo del producto a modificar: ", 1)
     producto = buscar(productos, codigo)
 
@@ -214,7 +222,7 @@ def modificar_producto():
     if validaciones.validar_si_no("¿Cambiar si requiere receta? (si/no): "):
         producto["requiere_receta"] = validaciones.validar_si_no("¿Requiere receta? (si/no): ")
 
-    if archivos.guardar_json(archivos.RUTA_PRODUCTOS, productos):
+    if archivos.guardar_json(archivos.RUTA_PRODUCTOS, productos, "productos"):
         print("Producto modificado correctamente.")
 
 
@@ -223,7 +231,9 @@ def eliminar_producto():
     DELETE: elimina un producto (pidiendo confirmacion) y sobrescribe
     productos.json.
     """
-    productos = archivos.leer_json(archivos.RUTA_PRODUCTOS)
+    productos = archivos.leer_json(archivos.RUTA_PRODUCTOS, "productos")
+    if productos is None:
+        return
     codigo = validaciones.validar_entero("Codigo del producto a eliminar: ", 1)
 
     try:
@@ -237,7 +247,7 @@ def eliminar_producto():
         return
 
     del productos[str(codigo)]
-    if archivos.guardar_json(archivos.RUTA_PRODUCTOS, productos):
+    if archivos.guardar_json(archivos.RUTA_PRODUCTOS, productos, "productos"):
         print("Producto eliminado correctamente.")
 
 
@@ -249,7 +259,9 @@ def ver_clientes():
     """
     READ general: lista todos los clientes.
     """
-    clientes = archivos.leer_json(archivos.RUTA_CLIENTES)
+    clientes = archivos.leer_json(archivos.RUTA_CLIENTES, "clientes")
+    if clientes is None:
+        return
     if len(clientes) == 0:
         print("No hay clientes cargados.")
         return
@@ -270,7 +282,9 @@ def ver_cliente():
     """
     READ individual: muestra todos los datos de un cliente.
     """
-    clientes = archivos.leer_json(archivos.RUTA_CLIENTES)
+    clientes = archivos.leer_json(archivos.RUTA_CLIENTES, "clientes")
+    if clientes is None:
+        return
     codigo = validaciones.validar_entero("Ingrese el codigo del cliente: ", 1)
     cliente = buscar(clientes, codigo)
 
@@ -290,7 +304,9 @@ def agregar_cliente():
     """
     CREATE: da de alta un cliente nuevo y sobrescribe clientes.json.
     """
-    clientes = archivos.leer_json(archivos.RUTA_CLIENTES)
+    clientes = archivos.leer_json(archivos.RUTA_CLIENTES, "clientes")
+    if clientes is None:
+        return
 
     nombre = validaciones.validar_texto("Nombre del cliente: ")
     apellido = validaciones.validar_texto("Apellido del cliente: ")
@@ -307,7 +323,7 @@ def agregar_cliente():
         "telefono": telefono
     }
 
-    if archivos.guardar_json(archivos.RUTA_CLIENTES, clientes):
+    if archivos.guardar_json(archivos.RUTA_CLIENTES, clientes, "clientes"):
         print("Cliente agregado correctamente con el codigo", codigo)
 
 
@@ -316,7 +332,9 @@ def modificar_cliente():
     UPDATE: modifica los datos de un cliente y sobrescribe clientes.json.
     Si se deja un campo vacio, no se cambia.
     """
-    clientes = archivos.leer_json(archivos.RUTA_CLIENTES)
+    clientes = archivos.leer_json(archivos.RUTA_CLIENTES, "clientes")
+    if clientes is None:
+        return
     codigo = validaciones.validar_entero("Codigo del cliente a modificar: ", 1)
     cliente = buscar(clientes, codigo)
 
@@ -333,7 +351,7 @@ def modificar_cliente():
 
     telefono = validaciones.validar_texto_opcional("Nuevo telefono: ")
     if telefono != "":
-        if telefono.isdigit() and 8 <= len(telefono) <= 13:
+        if telefono.isascii() and telefono.isdigit() and 8 <= len(telefono) <= 13:
             cliente["telefono"] = telefono
         else:
             print("Telefono invalido. Se mantiene el anterior.")
@@ -341,7 +359,7 @@ def modificar_cliente():
     if validaciones.validar_si_no("¿Cambiar receta online? (si/no): "):
         cliente["receta_online"] = validaciones.validar_si_no("¿Tiene receta online? (si/no): ")
 
-    if archivos.guardar_json(archivos.RUTA_CLIENTES, clientes):
+    if archivos.guardar_json(archivos.RUTA_CLIENTES, clientes, "clientes"):
         print("Cliente modificado correctamente.")
 
 
@@ -350,7 +368,9 @@ def eliminar_cliente():
     DELETE: elimina un cliente (pidiendo confirmacion) y sobrescribe
     clientes.json.
     """
-    clientes = archivos.leer_json(archivos.RUTA_CLIENTES)
+    clientes = archivos.leer_json(archivos.RUTA_CLIENTES, "clientes")
+    if clientes is None:
+        return
     codigo = validaciones.validar_entero("Codigo del cliente a eliminar: ", 1)
 
     try:
@@ -365,5 +385,5 @@ def eliminar_cliente():
         return
 
     del clientes[str(codigo)]
-    if archivos.guardar_json(archivos.RUTA_CLIENTES, clientes):
+    if archivos.guardar_json(archivos.RUTA_CLIENTES, clientes, "clientes"):
         print("Cliente eliminado correctamente.")
