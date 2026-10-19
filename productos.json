@@ -3,7 +3,7 @@
         "nombre": "Paracetamol 500mg",
         "categoria": "Medicamentos",
         "precio": 2500,
-        "stock": 20,
+        "stock": 18,
         "requiere_receta": false,
         "laboratorio": "Bayer"
     },
